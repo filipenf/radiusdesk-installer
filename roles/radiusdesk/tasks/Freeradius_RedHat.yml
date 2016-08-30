@@ -5,20 +5,16 @@
     src="maomuffy.repo.j2"
 
 - name: Installing Freeradius for RadiusDesk (RHEL/CentOS 6.x/7.x)
-  yum:
-    name={{ item }}
-    state=present
+  yum: name="{{ item }}" state=present
   with_items: "{{ freeradius_pkgs }}"
-  ignore_errors: yes
+
+- name: add user
+  user: name="{{ freeradius_user }}" state=present
 
 - name: Checking if we already have Freeradius Configuration Directory Backup (RHEL/CentOS 6.x/7.x)
   stat:
     path="{{ freeradius_conf_dir | quote }}_orig"
   register: fr_bk
-
-- name: Renaming Freeradius Configuration Directory (RHEL/CentOS 6.x/7.x)
-  shell: cp -afR {{ freeradius_conf_dir | quote }} {{ freeradius_conf_dir | quote }}_orig
-  when: fr_bk.stat.exists == False
 
 - name: Removing Old Freeradius Configuration Directory (RHEL/CentOS 6.x/7.x)
   shell: rm -rf {{ freeradius_conf_dir | quote }}
